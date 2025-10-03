@@ -1,7 +1,3 @@
 Flask
 Werkzeug
-tensorflow
 numpy
-gunicorn
-huggingface_hub
-Pillow
