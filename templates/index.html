@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Age & Gender PredictorJ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg: #0b0b0c;
+      --text: #e6e6e6;
+      --muted: #b5b5b8;
+      --card-bg: rgba(22,22,24,0.5);
+      --card-border: rgba(255,255,255,0.12);
+      --frost: blur(18px) saturate(125%);
+      --accent: #ff2b2b;
+      --accent-soft: rgba(255,43,43,0.35);
+      --focus: rgba(255,43,43,0.6);
+      --shadow-deep: 0 24px 60px rgba(0,0,0,0.65);
+      --radius-lg: 18px;
+      --ts-fast: 180ms cubic-bezier(.2,.7,.2,1);
+      --ts-slow: 500ms cubic-bezier(.2,.7,.2,1);
+      --nav-h: 56px;
+      --maxw: 760px;
+
+      /* Scrollbar theme */
+      --sb-track: rgba(255,255,255,0.06);
+      --sb-thumb: rgba(255,255,255,0.28);
+      --sb-thumb-hover: rgba(255,255,255,0.40);
+      --sb-corner: rgba(255,255,255,0.08);
+      --sb-width: 12px;
+      --sb-radius: 10px;
+    }
+
+    /* Single scroll context: only the viewport (html) scrolls */
+    html{
+      overflow-y: scroll;              /* permanent vertical scrollbar */
+      overflow-x: hidden;              /* prevent horizontal scrollbars */
+      scrollbar-width: thin;           /* Firefox thickness */
+      scrollbar-color: var(--sb-thumb) var(--sb-track); /* Firefox colors */
+    } /* Avoids navbar width changes and double scrollbars. [web:71][web:70][web:82] */
+
+    /* Do not create nested scroll contexts */
+    body, .page, #app-container{
+      overflow: visible;               /* allow content to flow; no inner scrollbars */
+      max-width: 100%;                 /* prevent 100vw pitfalls */
+    } /* Prevents the second scrollbar from inner containers. [web:82][web:77] */
+
+    /* Chromium/WebKit scrollbar styling on the viewport */
+    html::-webkit-scrollbar{
+      width: var(--sb-width);
+      height: var(--sb-width);
+    }
+    html::-webkit-scrollbar-track{
+      background: var(--sb-track);
+      border-radius: var(--sb-radius);
+    }
+    html::-webkit-scrollbar-thumb{
+      background-color: var(--sb-thumb);
+      border-radius: var(--sb-radius);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    html::-webkit-scrollbar-thumb:hover{
+      background-color: var(--sb-thumb-hover);
+    }
+    html::-webkit-scrollbar-corner{
+      background: var(--sb-corner);
+    } /* Cross‑browser styling for a consistent, tasteful scrollbar. [web:12][web:70] */
+
+    /* Page-level sticky footer layout */
+    html, body { height: 100%; }
+    body{
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+    }
+    .page{
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* Cinematic background (ensure no overflow) */
+    .bg-wrap{ position: fixed; inset: 0; z-index: -2; overflow: hidden; }
+    .bg-img{
+      position: absolute; inset: 0;
+      background: url('/static/background-t.jpg') center/cover no-repeat fixed;
+      transform: scale(1.05);
+      filter: grayscale(100%) contrast(105%) brightness(90%);
+      animation: slightZoom 18s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .bg-vignette{
+      position: absolute; inset: -10%;
+      pointer-events: none;
+      background:
+        radial-gradient(1200px 800px at 70% 35%, rgba(255,0,0,0.10), transparent 55%),
+        radial-gradient(1400px 900px at 50% 70%, rgba(255,255,255,0.05), transparent 60%),
+        radial-gradient(1200px 900px at 50% 50%, rgba(0,0,0,0.55), rgba(0,0,0,0.85) 70%);
+      mix-blend-mode: screen;
+      transition: transform var(--ts-slow);
+    }
+    @keyframes slightZoom{
+      0%{ transform: scale(1.04) translateY(-1%); }
+      100%{ transform: scale(1.06) translateY(1%); }
+    }
+
+    /* Sticky Header / Responsive Navbar */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
+  padding: 0 1.2rem;
+  background: rgba(10,10,12,0.6);
+  backdrop-filter: blur(10px) saturate(120%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  z-index: 1000;
+}
+
+/* Add space so content isn’t hidden behind header */
+.page {
+  padding-top: var(--nav-h);
+}
+
+    .brand{ display:flex; align-items:center; gap:.6rem; user-select:none; }
+    .brand img{ height: 26px; width:auto; display:block; filter: drop-shadow(0 0 6px rgba(255,43,43,0.28)); }
+    .logo{ font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; font-size: 1.05rem; }
+
+    .nav-right{ display:flex; align-items:center; gap:1rem; }
+    .nav-links{ display:flex; align-items:center; gap:1.1rem; }
+    .nav-links a{
+      color: var(--muted); text-decoration: none; font-weight:600; font-size:.96rem;
+      padding:.4rem .25rem;
+      transition: color var(--ts-fast), transform var(--ts-fast), text-shadow var(--ts-fast);
+    }
+    .nav-links a:hover{ color: var(--text); transform: translateY(-1px); text-shadow: 0 0 10px rgba(255,255,255,0.15); }
+    .nav-links a:focus-visible{ outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 6px; }
+
+    /* Hamburger toggle (mobile) */
+    .nav-toggle{
+      display: none;
+      background: none; border: none; color: var(--text);
+      padding: .45rem; border-radius: 8px; cursor: pointer;
+      line-height: 0;
+    }
+    .nav-toggle:focus-visible{ outline: 2px solid var(--focus); outline-offset: 4px; }
+
+    /* App container (glassmorphism) */
+    #app-container{
+
+      width: min(var(--maxw), 92vw);
+      margin: clamp(1.2rem, 2vw, 1.8rem) auto 2rem;
+      padding: clamp(1.2rem, 2.2vw, 2rem) clamp(1rem, 2.6vw, 2.2rem);
+      background: rgba(255, 255, 255, 0.001);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-deep);
+      animation: cardIn .6s ease both;
+      position: relative;
+      isolation: isolate;
+    }
+    @keyframes cardIn{ from{opacity:0; transform: translateY(14px)} to{opacity:1; transform:none} }
+
+    main h1{ font-weight: 800; font-size: clamp(2rem, 4.4vw, 3rem); margin-bottom:.3rem; text-shadow: 0 0 20px rgba(255,255,255,0.08); }
+    main h2{ font-weight:400; color: var(--muted); margin-bottom: 1.3rem; font-size:1.08rem; line-height:1.6; }
+
+    /* Uploader and controls */
+    .uploader{ display:grid; gap:1rem; place-items:center; }
+    .dropzone{
+      width:100%; border:1px dashed rgba(255,255,255,0.16);
+      border-radius:12px; padding:1rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));
+      transition: border-color var(--ts-fast), background var(--ts-fast), box-shadow var(--ts-fast);
+    }
+    .dropzone[data-active="true"]{
+      border-color: var(--accent);
+      background: linear-gradient(180deg, rgba(255,43,43,0.08), rgba(0,0,0,0.05));
+      box-shadow: 0 0 0 4px rgba(255,43,43,0.08), inset 0 0 26px rgba(255,43,43,0.06);
+    }
+    .helper{ color: var(--muted); font-size: .95rem; }
+
+    #file-upload{ display:none; }
+    #file-upload-label{
+      display:inline-flex; align-items:center; gap:.6rem; cursor:pointer;
+      background: linear-gradient(180deg, #1e1e21, #26262a);
+      color: var(--text); font-weight: 700; letter-spacing:.3px;
+      padding: 13px 34px; border-radius: 10px; font-size: 1.02rem;
+      border:1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
+      transition: transform var(--ts-fast), box-shadow var(--ts-fast), background var(--ts-fast), filter var(--ts-fast);
+      position: relative;
+    }
+    #file-upload-label::after{
+      content:""; position:absolute; left:12%; right:12%; bottom:6px; height:2px; border-radius:2px;
+      background: radial-gradient(16px 6px at 50% 50%, var(--accent), transparent);
+      opacity: 0; filter: blur(2px); transition: opacity var(--ts-fast);
+    }
+    #file-upload-label:hover{ transform: translateY(-1px); box-shadow: 0 16px 36px rgba(0,0,0,0.5), 0 0 22px var(--accent-soft); background: linear-gradient(180deg, #222226, #2b2b30); }
+    #file-upload-label:hover::after{ opacity:.55; }
+    #file-upload-label:focus-visible{ outline: 3px solid var(--focus); outline-offset: 4px; }
+    #file-upload-label.loading{ pointer-events:none; opacity:.9; animation: pulse 1.2s infinite ease-in-out; }
+    @keyframes pulse{ 0%{ box-shadow: 0 0 0 0 rgba(255,43,43,0.35) } 70%{ box-shadow: 0 0 0 14px rgba(255,43,43,0) } 100%{ box-shadow: 0 0 0 0 rgba(255,43,43,0) } }
+
+    #image-preview{
+      margin: 1.2rem auto .3rem; max-width: 320px; max-height: 320px; overflow:hidden;
+      border-radius: 14px; border:1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      opacity:0; display:none; transition: opacity var(--ts-slow), transform var(--ts-slow);
+      background: rgba(0,0,0,0.25); backdrop-filter: blur(8px);
+    }
+    #image-preview.visible{ display:block; opacity:1; }
+    #image-preview img{ width:100%; height:auto; display:block; object-fit: cover; transition: transform 8s ease-in-out; }
+    #image-preview:hover img{ transform: scale(1.05); }
+
+    #result{ margin-top: 1rem; font-size:1.08rem; min-height: 3em; opacity:0; transition: opacity var(--ts-slow), transform var(--ts-slow); }
+    #result.visible{ opacity:1; transform:none; }
+    .pill{ display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:700; font-size:.92rem; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); margin-right:.5rem; }
+    .pill.success{ color:#d8ffe9; border-color: rgba(53,194,122,0.5); background: rgba(53,194,122,0.12); }
+    .pill.error{ color:#ffe3e3; border-color: rgba(255,107,107,0.5); background: rgba(255,107,107,0.12); }
+
+    .progress{ width:100%; margin-top:.8rem; height:8px; border-radius:999px; background: rgba(255,255,255,0.06); overflow:hidden; border:1px solid rgba(255,255,255,0.1); display:none; }
+    .progress > span{ display:block; height:100%; width:0%; background: linear-gradient(90deg, var(--accent), #ff5959); box-shadow: 0 0 18px rgba(255,43,43,0.45) inset; transition: width 200ms ease; }
+
+    /* Sticky Footer */
+    footer{
+      flex-shrink: 0;
+      background: rgba(10,10,12,0.85);
+      padding: .9rem 0;
+      text-align:center; color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .credits{ font-size:.95rem; }
+
+    /* Responsive Navbar: collapse to overlay menu */
+    @media (max-width: 768px){
+      :root{ --nav-h: 52px; }
+      .brand img{ height:24px; }
+      .logo{ font-size: 1rem; }
+      .nav-toggle{ display: inline-flex; align-items:center; justify-content:center; }
+      .nav-links{
+        position: fixed; top: var(--nav-h); left: 0; right: 0;
+        display: grid; gap: .2rem;
+        padding: .6rem .9rem .9rem;
+        background: rgba(12,12,14,0.88);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        transform-origin: top center;
+        transform: scaleY(0.98);
+        opacity: 0; visibility: hidden;
+        transition: opacity 200ms ease, transform 200ms ease, visibility 0s linear 200ms;
+      }
+      .nav-links a{ padding: .7rem .4rem; font-size: 1rem; }
+      body.nav-open .nav-links{
+        opacity: 1; visibility: visible; transform: scaleY(1);
+        transition: opacity 220ms ease, transform 220ms ease, visibility 0s;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background layers -->
+  <div class="bg-wrap">
+    <div class="bg-img"></div>
+    <div class="bg-vignette"></div>
+  </div>
+
+  <!-- Sticky, responsive header -->
+  <header id="site-header">
+    <div class="brand">
+      <img src="/static/logo.png" alt="Logo" />
+      <div class="logo">AI-MIRROR</div>
+    </div>
+    <div class="nav-right">
+      <nav id="primary-nav" aria-label="Primary">
+        <div class="nav-links" id="navLinks">
+          <a href="{{ url_for('index') }}" aria-label="Home">Home</a>
+          <a href="{{ url_for('about') }}" aria-label="About">About</a>
+          <a href="{{ url_for('contact') }}" aria-label="Contact">Contact</a>
+        </div>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false">
+        <svg width="26" height="26" viewBox="0 0 24 24" role="img" aria-hidden="true">
+          <path fill="currentColor" d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Content wrapper ensures sticky footer behavior -->
+  <div class="page">
+    <div id="app-container" role="main">
+      <main>
+        <h1>Predict Age & Gender</h1>
+        <h2>Upload a clear face photo for instant AI‑powered analysis with a pro‑grade, privacy‑aware experience</h2>
+
+        <section class="uploader">
+          <div class="dropzone" id="dropzone" aria-label="Image dropzone" tabindex="0">
+            <div class="helper">Drag & drop an image here, or click choose image</div>
+          </div>
+
+          <label for="file-upload" id="file-upload-label" tabindex="0" role="button" aria-controls="result">
+            Choose Image
+          </label>
+          <input id="file-upload" type="file" accept="image/*" aria-describedby="result" />
+        </section>
+
+        <div id="image-preview" aria-live="polite"></div>
+        <div class="progress" id="progress"><span></span></div>
+        <div id="result" role="status" aria-live="polite"></div>
+      </main>
+    </div>
+  </div>
+
+  <footer>
+    <div class="credits">© 2025 JEET BHARDWAJ — All Rights Reserved</div>
+  </footer>
+
+  <script>
+    // Responsive navbar toggling for mobile
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    function setExpanded(expanded){
+      if(expanded){
+        document.body.classList.add('nav-open');
+      }else{
+        document.body.classList.remove('nav-open');
+      }
+      navToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+    navToggle.addEventListener('click', ()=>{
+      const isOpen = document.body.classList.contains('nav-open');
+      setExpanded(!isOpen);
+    });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){ setExpanded(false); }
+    });
+    document.addEventListener('click', (e)=>{
+      if(window.matchMedia('(max-width: 768px)').matches){
+        const header = document.getElementById('site-header');
+        const withinHeader = header.contains(e.target);
+        if(!withinHeader) setExpanded(false);
+      }
+    });
+
+    // Uploader behavior
+    const fileInput = document.getElementById('file-upload');
+    const result = document.getElementById('result');
+    const uploadLabel = document.getElementById('file-upload-label');
+    const imagePreview = document.getElementById('image-preview');
+    const dropzone = document.getElementById('dropzone');
+    const progress = document.getElementById('progress');
+    const progressBar = progress.querySelector('span');
+
+    const prevent = e => { e.preventDefault(); e.stopPropagation(); };
+    ['dragenter','dragover','dragleave','drop'].forEach(evt => {
+      dropzone.addEventListener(evt, prevent);
+      document.body.addEventListener(evt, prevent);
+    });
+    ['dragenter','dragover'].forEach(evt=>{
+      dropzone.addEventListener(evt, ()=> dropzone.setAttribute('data-active','true'));
+    });
+    ['dragleave','drop'].forEach(evt=>{
+      dropzone.addEventListener(evt, ()=> dropzone.setAttribute('data-active','false'));
+    });
+    dropzone.addEventListener('drop', e=>{
+      const files = e.dataTransfer.files;
+      if(files && files[0]) handleFile(files[0]);
+    });
+    dropzone.addEventListener('click', ()=> fileInput.click());
+    dropzone.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileInput.click(); }
+    });
+
+    fileInput.addEventListener('change', ()=>{
+      if (!fileInput.files.length) return;
+      handleFile(fileInput.files[0]);
+    });
+
+    function showPreview(file){
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image Preview" />`;
+        imagePreview.classList.add('visible');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showProgress(percent){
+      progress.style.display = 'block';
+      progressBar.style.width = percent + '%';
+      if(percent >= 100){
+        setTimeout(()=>{ progress.style.display='none'; progressBar.style.width='0%'; }, 600);
+      }
+    }
+
+    function validateFile(file){
+      const maxMB = 8;
+      const validTypes = ['image/jpeg','image/png','image/webp','image/jpg'];
+      if(!validTypes.includes(file.type)){
+        throw new Error('Unsupported file type. Please use JPEG, PNG, or WEBP.');
+      }
+      if(file.size > maxMB * 1024 * 1024){
+        throw new Error('File too large. Please keep under 8 MB.');
+      }
+    }
+
+    async function handleFile(file){
+      try{
+        validateFile(file);
+      }catch(err){
+        result.innerHTML = `<span class="pill error">Error</span> ${err.message}`;
+        result.classList.add('visible');
+        return;
+      }
+
+      showPreview(file);
+
+      result.textContent = 'Analyzing image...';
+      result.classList.add('visible');
+      uploadLabel.classList.add('loading');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Simulated progress
+      let fake = 0;
+      const fakeTimer = setInterval(()=>{
+        fake = Math.min(fake + Math.random()*18, 85);
+        showProgress(Math.floor(fake));
+      }, 140);
+
+      try{
+        const res = await fetch('/predict', { method: 'POST', body: formData });
+        clearInterval(fakeTimer);
+        showProgress(100);
+
+        if(!res.ok) throw new Error('Prediction failed');
+        const data = await res.json();
+
+        const safeAge = typeof data.age !== 'undefined' ? data.age : '—';
+        const safeGender = data.gender ? data.gender : '—';
+        result.innerHTML = `
+          <span class="pill success">Result</span>
+          <strong>Age:</strong> ${safeAge} years<br />
+          <strong>Gender:</strong> ${safeGender}
+        `;
+      }catch(err){
+        clearInterval(fakeTimer);
+        progress.style.display='none'; progressBar.style.width='0%';
+        result.innerHTML = `<span class="pill error">Error</span> ${err.message || 'Error analyzing image. Please try again.'}`;
+        console.error(err);
+      }finally{
+        uploadLabel.classList.remove('loading');
+      }
+    }
+  </script>
+</body>
+</html>
