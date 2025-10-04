@@ -22,7 +22,6 @@
       --ts-slow: 500ms cubic-bezier(.2,.7,.2,1);
       --nav-h: 56px;
       --maxw: 760px;
-
       /* Scrollbar theme */
       --sb-track: rgba(255,255,255,0.06);
       --sb-thumb: rgba(255,255,255,0.28);
@@ -31,7 +30,6 @@
       --sb-width: 12px;
       --sb-radius: 10px;
     }
-
     /* Single scroll context: only the viewport (html) scrolls */
     html{
       overflow-y: scroll;              /* permanent vertical scrollbar */
@@ -39,13 +37,11 @@
       scrollbar-width: thin;           /* Firefox thickness */
       scrollbar-color: var(--sb-thumb) var(--sb-track); /* Firefox colors */
     } /* Avoids navbar width changes and double scrollbars. [web:71][web:70][web:82] */
-
     /* Do not create nested scroll contexts */
     body, .page, #app-container{
       overflow: visible;               /* allow content to flow; no inner scrollbars */
       max-width: 100%;                 /* prevent 100vw pitfalls */
     } /* Prevents the second scrollbar from inner containers. [web:82][web:77] */
-
     /* Chromium/WebKit scrollbar styling on the viewport */
     html::-webkit-scrollbar{
       width: var(--sb-width);
@@ -67,7 +63,6 @@
     html::-webkit-scrollbar-corner{
       background: var(--sb-corner);
     } /* Cross‑browser styling for a consistent, tasteful scrollbar. [web:12][web:70] */
-
     /* Page-level sticky footer layout */
     html, body { height: 100%; }
     body{
@@ -85,7 +80,6 @@
       flex-direction: column;
       align-items: stretch;
     }
-
     /* Cinematic background (ensure no overflow) */
     .bg-wrap{ position: fixed; inset: 0; z-index: -2; overflow: hidden; }
     .bg-img{
@@ -110,7 +104,6 @@
       0%{ transform: scale(1.04) translateY(-1%); }
       100%{ transform: scale(1.06) translateY(1%); }
     }
-
     /* Sticky Header / Responsive Navbar */
 header {
   position: fixed;
@@ -128,16 +121,13 @@ header {
   box-shadow: 0 6px 20px rgba(0,0,0,0.35);
   z-index: 1000;
 }
-
 /* Add space so content isn’t hidden behind header */
 .page {
   padding-top: var(--nav-h);
 }
-
     .brand{ display:flex; align-items:center; gap:.6rem; user-select:none; }
     .brand img{ height: 26px; width:auto; display:block; filter: drop-shadow(0 0 6px rgba(255,43,43,0.28)); }
     .logo{ font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; font-size: 1.05rem; }
-
     .nav-right{ display:flex; align-items:center; gap:1rem; }
     .nav-links{ display:flex; align-items:center; gap:1.1rem; }
     .nav-links a{
@@ -147,7 +137,6 @@ header {
     }
     .nav-links a:hover{ color: var(--text); transform: translateY(-1px); text-shadow: 0 0 10px rgba(255,255,255,0.15); }
     .nav-links a:focus-visible{ outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 6px; }
-
     /* Hamburger toggle (mobile) */
     .nav-toggle{
       display: none;
@@ -156,10 +145,8 @@ header {
       line-height: 0;
     }
     .nav-toggle:focus-visible{ outline: 2px solid var(--focus); outline-offset: 4px; }
-
     /* App container (glassmorphism) */
     #app-container{
-
       width: min(var(--maxw), 92vw);
       margin: clamp(1.2rem, 2vw, 1.8rem) auto 2rem;
       padding: clamp(1.2rem, 2.2vw, 2rem) clamp(1rem, 2.6vw, 2.2rem);
@@ -174,10 +161,8 @@ header {
       isolation: isolate;
     }
     @keyframes cardIn{ from{opacity:0; transform: translateY(14px)} to{opacity:1; transform:none} }
-
     main h1{ font-weight: 800; font-size: clamp(2rem, 4.4vw, 3rem); margin-bottom:.3rem; text-shadow: 0 0 20px rgba(255,255,255,0.08); }
     main h2{ font-weight:400; color: var(--muted); margin-bottom: 1.3rem; font-size:1.08rem; line-height:1.6; }
-
     /* Uploader and controls */
     .uploader{ display:grid; gap:1rem; place-items:center; }
     .dropzone{
@@ -192,7 +177,6 @@ header {
       box-shadow: 0 0 0 4px rgba(255,43,43,0.08), inset 0 0 26px rgba(255,43,43,0.06);
     }
     .helper{ color: var(--muted); font-size: .95rem; }
-
     #file-upload{ display:none; }
     #file-upload-label{
       display:inline-flex; align-items:center; gap:.6rem; cursor:pointer;
@@ -214,7 +198,6 @@ header {
     #file-upload-label:focus-visible{ outline: 3px solid var(--focus); outline-offset: 4px; }
     #file-upload-label.loading{ pointer-events:none; opacity:.9; animation: pulse 1.2s infinite ease-in-out; }
     @keyframes pulse{ 0%{ box-shadow: 0 0 0 0 rgba(255,43,43,0.35) } 70%{ box-shadow: 0 0 0 14px rgba(255,43,43,0) } 100%{ box-shadow: 0 0 0 0 rgba(255,43,43,0) } }
-
     #image-preview{
       margin: 1.2rem auto .3rem; max-width: 320px; max-height: 320px; overflow:hidden;
       border-radius: 14px; border:1px solid rgba(255,255,255,0.12);
@@ -225,16 +208,13 @@ header {
     #image-preview.visible{ display:block; opacity:1; }
     #image-preview img{ width:100%; height:auto; display:block; object-fit: cover; transition: transform 8s ease-in-out; }
     #image-preview:hover img{ transform: scale(1.05); }
-
     #result{ margin-top: 1rem; font-size:1.08rem; min-height: 3em; opacity:0; transition: opacity var(--ts-slow), transform var(--ts-slow); }
     #result.visible{ opacity:1; transform:none; }
     .pill{ display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:700; font-size:.92rem; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); margin-right:.5rem; }
     .pill.success{ color:#d8ffe9; border-color: rgba(53,194,122,0.5); background: rgba(53,194,122,0.12); }
     .pill.error{ color:#ffe3e3; border-color: rgba(255,107,107,0.5); background: rgba(255,107,107,0.12); }
-
     .progress{ width:100%; margin-top:.8rem; height:8px; border-radius:999px; background: rgba(255,255,255,0.06); overflow:hidden; border:1px solid rgba(255,255,255,0.1); display:none; }
     .progress > span{ display:block; height:100%; width:0%; background: linear-gradient(90deg, var(--accent), #ff5959); box-shadow: 0 0 18px rgba(255,43,43,0.45) inset; transition: width 200ms ease; }
-
     /* Sticky Footer */
     footer{
       flex-shrink: 0;
@@ -244,7 +224,6 @@ header {
       border-top: 1px solid rgba(255,255,255,0.06);
     }
     .credits{ font-size:.95rem; }
-
     /* Responsive Navbar: collapse to overlay menu */
     @media (max-width: 768px){
       :root{ --nav-h: 52px; }
@@ -355,7 +334,6 @@ header {
         if(!withinHeader) setExpanded(false);
       }
     });
-
     // Uploader behavior
     const fileInput = document.getElementById('file-upload');
     const result = document.getElementById('result');
@@ -364,7 +342,6 @@ header {
     const dropzone = document.getElementById('dropzone');
     const progress = document.getElementById('progress');
     const progressBar = progress.querySelector('span');
-
     const prevent = e => { e.preventDefault(); e.stopPropagation(); };
     ['dragenter','dragover','dragleave','drop'].forEach(evt => {
       dropzone.addEventListener(evt, prevent);
@@ -384,12 +361,10 @@ header {
     dropzone.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileInput.click(); }
     });
-
     fileInput.addEventListener('change', ()=>{
       if (!fileInput.files.length) return;
       handleFile(fileInput.files[0]);
     });
-
     function showPreview(file){
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -398,7 +373,6 @@ header {
       };
       reader.readAsDataURL(file);
     }
-
     function showProgress(percent){
       progress.style.display = 'block';
       progressBar.style.width = percent + '%';
@@ -406,7 +380,6 @@ header {
         setTimeout(()=>{ progress.style.display='none'; progressBar.style.width='0%'; }, 600);
       }
     }
-
     function validateFile(file){
       const maxMB = 8;
       const validTypes = ['image/jpeg','image/png','image/webp','image/jpg'];
@@ -417,40 +390,40 @@ header {
         throw new Error('File too large. Please keep under 8 MB.');
       }
     }
-
-    async function handleFile(file){
-      try{
-        validateFile(file);
-      }catch(err){
-        result.innerHTML = `<span class="pill error">Error</span> ${err.message}`;
-        result.classList.add('visible');
-        return;
-      }
-
-      showPreview(file);
-
-      result.textContent = 'Analyzing image...';
+  async function handleFile(file) {
+    try {
+      validateFile(file);
+    } catch (err) {
+      result.innerHTML = `<span class="pill error">Error</span> ${err.message}`;
       result.classList.add('visible');
-      uploadLabel.classList.add('loading');
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Simulated progress
-      let fake = 0;
-      const fakeTimer = setInterval(()=>{
-        fake = Math.min(fake + Math.random()*18, 85);
-        showProgress(Math.floor(fake));
-      }, 140);
-
-      try{
-        const res = await fetch('/predict', { method: 'POST', body: formData });
-        clearInterval(fakeTimer);
-        showProgress(100);
-
-        if(!res.ok) throw new Error('Prediction failed');
-        const data = await res.json();
-
+      return;
+    }
+    showPreview(file);
+    result.textContent = 'Analyzing image...';
+    result.classList.add('visible');
+    uploadLabel.classList.add('loading');
+    const formData = new FormData();
+    formData.append('file', file);
+    // Simulated progress
+    let fake = 0;
+    const fakeTimer = setInterval(() => {
+      fake = Math.min(fake + Math.random() * 18, 85);
+      showProgress(Math.floor(fake));
+    }, 140);
+    try {
+      const res = await fetch('/predict', { method: 'POST', body: formData });
+      clearInterval(fakeTimer);
+      showProgress(100);
+      if (!res.ok) throw new Error('Prediction failed');
+      const data = await res.json();
+      // 🟡 Handle unclear face condition
+      if (data.OUTPUT) {
+        result.innerHTML = `
+          <span class="pill warning">Notice</span>
+          <strong>${data.OUTPUT}</strong>
+        `;
+      } else {
+        // 🟢 Normal age-gender output
         const safeAge = typeof data.age !== 'undefined' ? data.age : '—';
         const safeGender = data.gender ? data.gender : '—';
         result.innerHTML = `
@@ -458,15 +431,17 @@ header {
           <strong>Age:</strong> ${safeAge} years<br />
           <strong>Gender:</strong> ${safeGender}
         `;
-      }catch(err){
-        clearInterval(fakeTimer);
-        progress.style.display='none'; progressBar.style.width='0%';
-        result.innerHTML = `<span class="pill error">Error</span> ${err.message || 'Error analyzing image. Please try again.'}`;
-        console.error(err);
-      }finally{
-        uploadLabel.classList.remove('loading');
       }
+    } catch (err) {
+      clearInterval(fakeTimer);
+      progress.style.display = 'none';
+      progressBar.style.width = '0%';
+      result.innerHTML = `<span class="pill error">Error</span> ${err.message || 'Error analyzing image. Please try again.'}`;
+      console.error(err);
+    } finally {
+      uploadLabel.classList.remove('loading');
     }
+  }
   </script>
 </body>
 </html>
